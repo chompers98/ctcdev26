@@ -1,5 +1,6 @@
 import { getRestaurants } from '@/lib/apiClient';
 import Link from 'next/link';
+import { AddRestaurantForm } from './AddRestaurantForm';
 
 // Server component. Fetches restaurants on each request and renders a plain
 // list. There is no loading state, no empty state, and no error handling: if
@@ -9,7 +10,9 @@ export default async function HomePage() {
 
   return (
     <div>
-      <h2 className="mb-4 text-lg font-medium">Restaurants</h2>
+      <h2 className="mb-4 text-lg font-medium">Add a restaurant</h2>
+      <AddRestaurantForm />
+      <h2 className="mt-8 mb-4 text-lg font-medium">Restaurants</h2>
       <ul className="space-y-3">
         {restaurants.map((restaurant) => (
           <li

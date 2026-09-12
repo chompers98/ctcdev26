@@ -17,7 +17,9 @@ export default function RootLayout({
       <body className="min-h-screen">
         <header className="border-b border-gray-200 bg-white">
           <div className="mx-auto max-w-3xl px-6 py-4 flex items-center justify-between">
-            <h1 className="text-xl font-semibold">Feeding Brennen</h1>
+            <Link href="/">
+              <h1 className="text-xl font-semibold">Feeding Brennen</h1>
+            </Link>            
             <nav className="text-sm">
               <Link href="/recommendations" className="text-gray-600 hover:underline">
                 Where should I eat?
