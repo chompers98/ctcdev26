@@ -2,23 +2,21 @@
 
 ## 1. What did you build for Part B, and why that?
 
-Three connected pieces on top of the existing schema: duplicate-restaurant prevention (`409` on a repeated name + address), a visits and spending API (log, list, and delete visits, plus a per-restaurant spending summary), and a budget-aware recommendation endpoint that suggests the highest-rated restaurant Brennen has visited and can still afford. I also added a light UI: an add-restaurant form on the home page, a restaurant detail page with visit history and logging, and a "Where should I eat?" page for the recommendation.
+I added 3 new details. First, duplicate-restaurant prevention (explicitly returning `409` instead of '500' on a repeated name + address). Second, a visits and spending API (log, list, and delete visits + a per-restaurant spending summary). Third, a budget-aware recommendation endpoint that suggests the highest-rated restaurant Brennen has visited and can still afford. I also added a light UI, namely an add-restaurant form on the home page, a restaurant detail page with visit history and logging, and a "Where should I eat?" page for the recommendation.
 
-The app is named Feeding Brennen and is supposed to track spending, but `visits`, its types, and its row mapper already existed in the codebase with no API or UI behind them. That gap between what the app claims to do and what it actually does felt like the real thing to build, and the recommendation gives the spending data an actual use.
+The description of the app states it is for "tracking restaurants, visits, and how much Brennen spends eating out." Yet, the visits and spending related APIs were left incomplete, and the associated data was not visible in the UI. As such, that was a key functional gap I thought was important to close before even adding an additional feature. The recommendation feature builds on this app concept by incorporating Brennan's data to provide some use to him: given his current budget as well as past restaurant visit and spending data, what restaurant should Brennan visit if he's looking to eat out?
 
 ## 2. What did you decide, and what did you rule out?
 
-"Liked" reuses the restaurant's existing `rating` field (`>= 4`) rather than a second per-visit rating column, since a rating already existed. The recommendation only considers restaurants Brennen has already visited, using each one's own average spend as its cost estimate, instead of guessing at cost for places with no visit history. Duplicate prevention is a database unique index rather than an application-level check before insert, since check-then-insert has a race condition and the index is atomic. Visit deletion lives at a flat `/api/visits/:id` rather than nested under its restaurant, since a visit's own id is already enough to find it.
+The metric of what restaurant Brennan 'likes' reuses the restaurant's overall existing `rating` field (`>= 4`) rather than a second per-visit rating column, since a rating already existed. The recommendation only considers restaurants Brennen has already visited, using each one's own average spend as its cost estimate, instead of guessing at cost for places with no visit history. Duplicate prevention is a database unique index rather than an application-level check before insert, since check-then-insert has a race condition and the index is atomic. Visit deletion lives at a flat `/api/visits/:id` rather than nested under its restaurant, since a visit's own id is already enough to find it.
 
-Ruled out: editing a logged visit (delete and re-log covers a mistake without doubling the CRUD surface), and recommending unvisited restaurants (estimating their cost would mean guessing from other restaurants in the same cuisine, too speculative given how little data is seeded).
-
-Tradeoff I'm least sure about: limiting recommendations to visited restaurants means it can never surface something new.
+Ruled out: UI control to delete a restaurant. The API already supports it from Part A, but visits has ON DELETE CASCADE, so deleting a restaurant silently destroys its entire visit and spending history too. Of course this can be implemented, but given the time constraint I felt it was better to focus on more sophisticated features + logically speaking, Brennan's restaurant history is important to the recommendation algorithm and there is no way for Brennan to 'unvisit' a restaurant. 
 
 ## 3. Where did you cut corners?
 
-Visit history has no pagination. Restaurants and visits can be created and deleted but not edited. The recommendation returns one suggestion, no ranked alternatives. The UI has no loading states, every action waits on the network response before refreshing.
+Visit history has no pagination. Restaurants and visits can be created but not edited. The recommendation returns one suggestion, no ranked alternatives. The recommendation also only sources from what Brennan has already visited, which honestly isn't a good recommendation. Ideally I would have been able to implement a more sophisticated algorithm that pulls some sort of external API to find restaurants and use Brennan's restaurant (cuisine, location, etc), as well as external reviews of the restaurants to determine which among these new restaurants is Brennan most likely to enjoy.
 
-With another day, I'd add editing for restaurants and visits, and reconsider whether the recommendation should weigh liked cuisines more broadly instead of only restaurants Brennen has personally logged.
+There are also some basic functional features that are missing, like being able to edit for restaurants and visits, and reconsider whether the recommendation should weigh liked cuisines more broadly instead of only restaurants Brennen has personally logged.
 
 ---
 
@@ -108,6 +106,12 @@ curl -i "http://localhost:3000/api/recommendations?budget=abc"                  
 ```
 
 Also clicked through the UI: added a restaurant from the home page, opened its detail page, logged and deleted a visit and watched the summary update, and used the "Where should I eat?" page with a few different budgets.
+
+
+<img width="1461" height="763" alt="Screenshot 2026-09-12 at 12 18 51 AM" src="https://github.com/user-attachments/assets/be4e7d58-64cb-43ea-a1ea-3adea7a6dc6d" />
+<img width="1469" height="774" alt="Screenshot 2026-09-12 at 12 19 25 AM" src="https://github.com/user-attachments/assets/57464a9e-23b6-45c8-a89c-d3bec4adb974" />
+<img width="1464" height="766" alt="Screenshot 2026-09-12 at 12 19 38 AM" src="https://github.com/user-attachments/assets/6ea66b5a-86ca-4710-871b-3dc1bfc85065" />
+
 
 ## Known issues / what I'd do next
 
