@@ -1,6 +1,5 @@
 import { getRestaurants } from '@/lib/apiClient';
 import Link from 'next/link';
-import { getRestaurants } from '@/lib/apiClient';
 
 // Server component. Fetches restaurants on each request and renders a plain
 // list. There is no loading state, no empty state, and no error handling: if
@@ -20,7 +19,8 @@ export default async function HomePage() {
             <div className="flex items-baseline justify-between">
               <Link href={`/restaurants/${restaurant.id}`} className="font-medium hover:underline">
                 {restaurant.name}
-              </Link>              <span className="text-sm text-gray-500">
+              </Link>              
+              <span className="text-sm text-gray-500">
                 {restaurant.rating}★
               </span>
             </div>
