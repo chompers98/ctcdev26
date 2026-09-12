@@ -3,6 +3,15 @@ import { ValidationError } from '@/lib/errors';
 
 export type RestaurantInput = Omit<Restaurant, 'id' | 'createdAt'>;
 
+/** Parses a request body as JSON, turning a malformed body into a ValidationError. */
+export async function parseJsonBody(req: Request): Promise<unknown> {
+  try {
+    return await req.json();
+  } catch {
+    throw new ValidationError('Request body must be valid JSON');
+  }
+}
+
 export function validateRestaurantInput(body: unknown) : RestaurantInput {
   if (typeof body !== 'object' || body === null || Array.isArray(body)) {
     throw new ValidationError('Request body must be a JSON object');

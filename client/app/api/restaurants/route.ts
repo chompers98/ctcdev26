@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { pool } from '@/db/pool';
-import { handleError, parseJsonBody } from '@/lib/errors';
+import { handleError } from '@/lib/errors';
 import { RESTAURANT_COLUMNS, toRestaurant } from '@/lib/types';
-import { validateRestaurantInput } from '@/lib/validations';
+import { parseJsonBody, validateRestaurantInput } from '@/lib/validations';
 
 /**
  * GET /api/restaurants

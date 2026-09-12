@@ -23,14 +23,11 @@ import { NextResponse } from 'next/server';
 
 export class ValidationError extends Error {}
 export class NotFoundError extends Error {}
+export class ConflictError extends Error {}
 
-/** Parses a request body as JSON, turning a malformed body into a ValidationError. */
-export async function parseJsonBody(req: Request): Promise<unknown> {
-  try {
-    return await req.json();
-  } catch {
-    throw new ValidationError('Request body must be valid JSON');
-  }
+/** True if err is a Postgres unique-violation error (code 23505). */
+function isUniqueViolation(err: unknown): boolean {
+  return typeof err === 'object' && err !== null && 'code' in err && err.code === '23505';
 }
 
 /**
@@ -43,6 +40,10 @@ export function handleError(err: unknown): NextResponse {
   }
   if (err instanceof NotFoundError) {
     return NextResponse.json({ error: err.message }, { status: 404 });
+  }
+  if (err instanceof ConflictError || isUniqueViolation(err)) {
+    const message = err instanceof ConflictError ? err.message : 'A restaurant with that name and address already exists';
+    return NextResponse.json({ error: message }, { status: 409 });
   }
 
   console.error('Unhandled API error:', err);

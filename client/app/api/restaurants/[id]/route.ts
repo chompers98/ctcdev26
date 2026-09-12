@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { pool } from '@/db/pool';
-import { handleError, NotFoundError, parseJsonBody } from '@/lib/errors';
+import { handleError, NotFoundError } from '@/lib/errors';
 import { RESTAURANT_COLUMNS, toRestaurant } from '@/lib/types';
-import { validateRestaurantInput } from '@/lib/validations';
+import { parseJsonBody, validateRestaurantInput } from '@/lib/validations';
 
 type Params = { params: { id: string } };
 
