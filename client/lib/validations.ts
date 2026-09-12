@@ -19,11 +19,11 @@ export async function parseJsonBody(req: Request): Promise<unknown> {
 /** Parses a route :id param; anything that isn't a valid positive Postgres integer means "no such resource". */
 export function parseId(raw: string, resourceName: string): number {
   if (!/^\d+$/.test(raw)) {
-    throw new NotFoundError(${resourceName} not found);
+    throw new NotFoundError(`${resourceName} not found`);
   }
   const id = Number(raw);
   if (id > MAX_POSTGRES_INT) {
-    throw new NotFoundError(${resourceName} not found);
+    throw new NotFoundError(`${resourceName} not found`);
   }
   return id;
 }

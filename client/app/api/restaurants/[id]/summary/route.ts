@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { pool } from '@/db/pool';
-import { handleError, NotFoundError, parseId } from '@/lib/errors';
+import { handleError, NotFoundError } from '@/lib/errors';
 import { dateOnly } from '@/lib/types';
+import { parseId } from '@/lib/validations';
 
 type Params = { params: { id: string } };
 

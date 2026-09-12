@@ -12,7 +12,7 @@ type Params = { params: { id: string } };
  */
 export async function GET(_req: Request, { params }: Params) {
   try {
-    const id = parseId(params.id);
+    const id = parseId(params.id, 'Restaurant');
     const { rows } = await pool.query(
       `SELECT ${RESTAURANT_COLUMNS} FROM restaurants WHERE id = $1`,
       [id]
@@ -37,7 +37,7 @@ export async function GET(_req: Request, { params }: Params) {
  */
 export async function PUT(_req: Request, _ctx: Params) {
   try {
-    const id = parseId(_ctx.params.id);
+    const id = parseId(_ctx.params.id, 'Restaurant');
     const body = await parseJsonBody(_req);
     const { name, cuisine, address, rating } = validateRestaurantInput(body);
 
@@ -72,7 +72,7 @@ export async function PUT(_req: Request, _ctx: Params) {
  */
 export async function DELETE(_req: Request, _ctx: Params) {
   try {
-    const id = parseId(_ctx.params.id);
+    const id = parseId(_ctx.params.id, 'Restaurant');
     const { rows } = await pool.query(
       'DELETE FROM restaurants WHERE id = $1 RETURNING id',
       [id]
