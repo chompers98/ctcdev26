@@ -107,9 +107,13 @@ curl -i "http://localhost:3000/api/recommendations?budget=abc"                  
 
 Also clicked through the UI: added a restaurant from the home page, opened its detail page, logged and deleted a visit and watched the summary update, and used the "Where should I eat?" page with a few different budgets.
 
-
+Home page
 <img width="1461" height="763" alt="Screenshot 2026-09-12 at 12 18 51 AM" src="https://github.com/user-attachments/assets/be4e7d58-64cb-43ea-a1ea-3adea7a6dc6d" />
+
+Click on restaurant -- summary of visits
 <img width="1469" height="774" alt="Screenshot 2026-09-12 at 12 19 25 AM" src="https://github.com/user-attachments/assets/57464a9e-23b6-45c8-a89c-d3bec4adb974" />
+
+Recommendation page
 <img width="1464" height="766" alt="Screenshot 2026-09-12 at 12 19 38 AM" src="https://github.com/user-attachments/assets/6ea66b5a-86ca-4710-871b-3dc1bfc85065" />
 
 
