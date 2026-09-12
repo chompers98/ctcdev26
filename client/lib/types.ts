@@ -25,6 +25,10 @@
  * `unknown` until you check it. That check is your job (task A3).
  */
 
+/** Declare all restaurant columns; use over * in order to alias created_at as createdAt
+ * so that it stops populating as undefined. */
+export const RESTAURANT_COLUMNS = 'id, name, cuisine, address, rating, created_at AS "createdAt"';
+
 export interface Restaurant {
   id: number;
   name: string;

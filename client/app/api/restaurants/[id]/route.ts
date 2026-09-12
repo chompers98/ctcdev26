@@ -1,9 +1,24 @@
 import { NextResponse } from 'next/server';
 import { pool } from '@/db/pool';
-import { handleError } from '@/lib/errors';
-import { toRestaurant } from '@/lib/types';
+import { handleError, NotFoundError, parseJsonBody } from '@/lib/errors';
+import { RESTAURANT_COLUMNS, toRestaurant } from '@/lib/types';
+import { validateRestaurantInput } from '@/lib/validations';
 
 type Params = { params: { id: string } };
+
+const MAX_POSTGRES_INT = 2147483647;
+
+/** :id must be a positive integer within Postgres' int4 range; anything else is "no such restaurant". */
+function parseId(raw: string): number {
+  if (!/^\d+$/.test(raw)) {
+    throw new NotFoundError('Restaurant not found');
+  }
+  const id = Number(raw);
+  if (id > MAX_POSTGRES_INT) {
+    throw new NotFoundError('Restaurant not found');
+  }
+  return id;
+}
 
 /**
  * GET /api/restaurants/:id
@@ -11,13 +26,14 @@ type Params = { params: { id: string } };
  */
 export async function GET(_req: Request, { params }: Params) {
   try {
+    const id = parseId(params.id);
     const { rows } = await pool.query(
-      'SELECT * FROM restaurants WHERE id = $1',
-      [params.id]
+      `SELECT ${RESTAURANT_COLUMNS} FROM restaurants WHERE id = $1`,
+      [id]
     );
 
     if (rows.length === 0) {
-      return NextResponse.json({ error: 'Restaurant not found' }, { status: 404 });
+      throw new NotFoundError('Restaurant not found');
     }
 
     return NextResponse.json(toRestaurant(rows[0]));
@@ -35,8 +51,8 @@ export async function GET(_req: Request, { params }: Params) {
  */
 export async function PUT(_req: Request, _ctx: Params) {
   try {
-    const id = parseId(params.id);
-    const body = await parseJsonBody(req);
+    const id = parseId(_ctx.params.id);
+    const body = await parseJsonBody(_req);
     const { name, cuisine, address, rating } = validateRestaurantInput(body);
 
     const { rows } = await pool.query(
@@ -70,7 +86,7 @@ export async function PUT(_req: Request, _ctx: Params) {
  */
 export async function DELETE(_req: Request, _ctx: Params) {
   try {
-    const id = parseId(params.id);
+    const id = parseId(_ctx.params.id);
     const { rows } = await pool.query(
       'DELETE FROM restaurants WHERE id = $1 RETURNING id',
       [id]

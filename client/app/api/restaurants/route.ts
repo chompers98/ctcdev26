@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import { pool } from '@/db/pool';
 import { handleError, parseJsonBody } from '@/lib/errors';
-import { toRestaurant } from '@/lib/types';
+import { RESTAURANT_COLUMNS, toRestaurant } from '@/lib/types';
 import { validateRestaurantInput } from '@/lib/validations';
+
 /**
  * GET /api/restaurants
  * Returns all restaurants.
@@ -31,9 +32,9 @@ export async function GET() {
  * `rating` happily accepts 6. Decide what valid means for each field and reject
  * bad bodies with a 400 rather than letting them reach the database.
  */
-xport async function POST(_req: Request) {
+export async function POST(_req: Request) {
   try {
-    const body = await parseJsonBody(req);
+    const body = await parseJsonBody(_req);
     const { name, cuisine, address, rating } = validateRestaurantInput(body);
 
     const { rows } = await pool.query(
