@@ -25,9 +25,12 @@
  * `unknown` until you check it. That check is your job (task A3).
  */
 
-/** Declare all restaurant columns; use over * in order to alias created_at as createdAt
+/** Column list for queries returning restaurant row; use over * in order to alias created_at as createdAt
  * so that it stops populating as undefined. */
 export const RESTAURANT_COLUMNS = 'id, name, cuisine, address, rating, created_at AS "createdAt"';
+/** Column list for queries returning visit row; use over * in order to alias created_at as createdAt
+ * so that it stops populating as undefined. */
+export const VISIT_COLUMNS = 'id, "restaurantId", date, "amountSpent", notes, created_at AS "createdAt"';
 
 export interface Restaurant {
   id: number;
@@ -69,7 +72,7 @@ function isoTimestamp(value: unknown): string {
  * Uses the date's *local* parts, not `toISOString()`. `pg` builds the Date at
  * local midnight, so converting to UTC can roll it to the neighbouring day.
  */
-function dateOnly(value: unknown): string {
+export function dateOnly(value: unknown): string {
   if (!(value instanceof Date)) return String(value);
   const month = String(value.getMonth() + 1).padStart(2, '0');
   const day = String(value.getDate()).padStart(2, '0');

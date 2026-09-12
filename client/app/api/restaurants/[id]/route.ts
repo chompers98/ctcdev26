@@ -2,23 +2,9 @@ import { NextResponse } from 'next/server';
 import { pool } from '@/db/pool';
 import { handleError, NotFoundError } from '@/lib/errors';
 import { RESTAURANT_COLUMNS, toRestaurant } from '@/lib/types';
-import { parseJsonBody, validateRestaurantInput } from '@/lib/validations';
+import { parseJsonBody, parseId, validateRestaurantInput } from '@/lib/validations';
 
 type Params = { params: { id: string } };
-
-const MAX_POSTGRES_INT = 2147483647;
-
-/** :id must be a positive integer within Postgres' int4 range; anything else is "no such restaurant". */
-function parseId(raw: string): number {
-  if (!/^\d+$/.test(raw)) {
-    throw new NotFoundError('Restaurant not found');
-  }
-  const id = Number(raw);
-  if (id > MAX_POSTGRES_INT) {
-    throw new NotFoundError('Restaurant not found');
-  }
-  return id;
-}
 
 /**
  * GET /api/restaurants/:id
